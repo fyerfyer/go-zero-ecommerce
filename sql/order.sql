@@ -3,7 +3,7 @@ CREATE DATABASE orders;
 \c orders;
 
 CREATE TABLE orders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- 订单ID
+    id VARCHAR(64) NOT NULL PRIMARY KEY DEFAULT '', -- 订单ID，go-zero不支持UUID所以换成VARCHAR了
     userid BIGINT NOT NULL DEFAULT 0, -- 用户ID
     shoppingid BIGINT NOT NULL DEFAULT 0, -- 收货信息ID
     payment NUMERIC(20,2) NOT NULL DEFAULT 0, -- 实际付款金额
@@ -18,8 +18,8 @@ CREATE INDEX ix_userid_orders ON orders (userid);
 COMMENT ON TABLE orders IS '订单表';
 
 CREATE TABLE orderitem (
-    id BIGSERIAL PRIMARY KEY, -- 订单子表ID
-    order_id UUID NOT NULL, -- 订单ID
+    id BIGSERIAL NOT NULL PRIMARY KEY , -- 订单子表ID
+    order_id VARCHAR(64) NOT NULL DEFAULT '', -- 订单ID
     user_id BIGINT NOT NULL DEFAULT 0, -- 用户ID
     product_id BIGINT NOT NULL DEFAULT 0, -- 商品ID
     product_name VARCHAR(100) NOT NULL DEFAULT '', -- 商品名称
@@ -38,7 +38,7 @@ COMMENT ON TABLE orderitem IS '订单明细表';
 
 CREATE TABLE shipping (
     id BIGSERIAL PRIMARY KEY, -- 收货信息ID
-    orderid UUID NOT NULL, -- 订单ID
+    orderid VARCHAR(64) NOT NULL DEFAULT '', -- 订单ID
     userid BIGINT NOT NULL DEFAULT 0, -- 用户ID
     receiver_name VARCHAR(20) NOT NULL DEFAULT '', -- 收货姓名
     receiver_phone VARCHAR(20) NOT NULL DEFAULT '', -- 固定电话
