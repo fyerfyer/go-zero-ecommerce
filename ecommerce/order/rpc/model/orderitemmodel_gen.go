@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
 )
@@ -21,6 +23,8 @@ var (
 	orderitemRows                = strings.Join(orderitemFieldNames, ",")
 	orderitemRowsExpectAutoSet   = strings.Join(stringx.Remove(orderitemFieldNames, "id", "create_at", "create_time", "created_at", "update_at", "update_time", "updated_at"), ",")
 	orderitemRowsWithPlaceHolder = builder.PostgreSqlJoin(stringx.Remove(orderitemFieldNames, "id", "create_at", "create_time", "created_at", "update_at", "update_time", "updated_at"))
+
+	cachePublicOrderitemIdPrefix = "cache:public:orderitem:id:"
 )
 
 type (
@@ -32,7 +36,7 @@ type (
 	}
 
 	defaultOrderitemModel struct {
-		conn  sqlx.SqlConn
+		sqlc.CachedConn
 		table string
 	}
 
@@ -51,27 +55,33 @@ type (
 	}
 )
 
-func newOrderitemModel(conn sqlx.SqlConn) *defaultOrderitemModel {
+func newOrderitemModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultOrderitemModel {
 	return &defaultOrderitemModel{
-		conn:  conn,
-		table: `"public"."orderitem"`,
+		CachedConn: sqlc.NewConn(conn, c, opts...),
+		table:      `"public"."orderitem"`,
 	}
 }
 
 func (m *defaultOrderitemModel) Delete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("delete from %s where id = $1", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	publicOrderitemIdKey := fmt.Sprintf("%s%v", cachePublicOrderitemIdPrefix, id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where id = $1", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, publicOrderitemIdKey)
 	return err
 }
 
 func (m *defaultOrderitemModel) FindOne(ctx context.Context, id int64) (*Orderitem, error) {
-	query := fmt.Sprintf("select %s from %s where id = $1 limit 1", orderitemRows, m.table)
+	publicOrderitemIdKey := fmt.Sprintf("%s%v", cachePublicOrderitemIdPrefix, id)
 	var resp Orderitem
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
+	err := m.QueryRowCtx(ctx, &resp, publicOrderitemIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where id = $1 limit 1", orderitemRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -79,15 +89,30 @@ func (m *defaultOrderitemModel) FindOne(ctx context.Context, id int64) (*Orderit
 }
 
 func (m *defaultOrderitemModel) Insert(ctx context.Context, data *Orderitem) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values ($1, $2, $3, $4, $5, $6, $7, $8)", m.table, orderitemRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.OrderId, data.UserId, data.ProductId, data.ProductName, data.ProductImage, data.CurrentPrice, data.Quantity, data.TotalPrice)
+	publicOrderitemIdKey := fmt.Sprintf("%s%v", cachePublicOrderitemIdPrefix, data.Id)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values ($1, $2, $3, $4, $5, $6, $7, $8)", m.table, orderitemRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.OrderId, data.UserId, data.ProductId, data.ProductName, data.ProductImage, data.CurrentPrice, data.Quantity, data.TotalPrice)
+	}, publicOrderitemIdKey)
 	return ret, err
 }
 
 func (m *defaultOrderitemModel) Update(ctx context.Context, data *Orderitem) error {
-	query := fmt.Sprintf("update %s set %s where id = $1", m.table, orderitemRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.Id, data.OrderId, data.UserId, data.ProductId, data.ProductName, data.ProductImage, data.CurrentPrice, data.Quantity, data.TotalPrice)
+	publicOrderitemIdKey := fmt.Sprintf("%s%v", cachePublicOrderitemIdPrefix, data.Id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where id = $1", m.table, orderitemRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, data.Id, data.OrderId, data.UserId, data.ProductId, data.ProductName, data.ProductImage, data.CurrentPrice, data.Quantity, data.TotalPrice)
+	}, publicOrderitemIdKey)
 	return err
+}
+
+func (m *defaultOrderitemModel) formatPrimary(primary any) string {
+	return fmt.Sprintf("%s%v", cachePublicOrderitemIdPrefix, primary)
+}
+
+func (m *defaultOrderitemModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {
+	query := fmt.Sprintf("select %s from %s where id = $1 limit 1", orderitemRows, m.table)
+	return conn.QueryRowCtx(ctx, v, query, primary)
 }
 
 func (m *defaultOrderitemModel) tableName() string {

@@ -14,12 +14,33 @@ import (
 )
 
 type (
-	GetProductRequest  = product.GetProductRequest
-	GetProductResponse = product.GetProductResponse
-	ProductItem        = product.ProductItem
+	CheckAndUpdateStockRequest  = product.CheckAndUpdateStockRequest
+	CheckAndUpdateStockResponse = product.CheckAndUpdateStockResponse
+	DecStockRequest             = product.DecStockRequest
+	DecStockResponse            = product.DecStockResponse
+	GetProductByIDRequest       = product.GetProductByIDRequest
+	GetProductByIDResponse      = product.GetProductByIDResponse
+	GetProductsRequest          = product.GetProductsRequest
+	GetProductsResponse         = product.GetProductsResponse
+	ListProductsRequest         = product.ListProductsRequest
+	ListProductsResponse        = product.ListProductsResponse
+	OperateProductsRequest      = product.OperateProductsRequest
+	OperateProductsResponse     = product.OperateProductsResponse
+	ProductItem                 = product.ProductItem
+	UpdateProductStockRequest   = product.UpdateProductStockRequest
+	UpdateProductStockResponse  = product.UpdateProductStockResponse
 
 	Product interface {
-		GetProducts(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
+		GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error)
+		GetProducts(ctx context.Context, in *GetProductsRequest, opts ...grpc.CallOption) (*GetProductsResponse, error)
+		ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error)
+		OperateProducts(ctx context.Context, in *OperateProductsRequest, opts ...grpc.CallOption) (*OperateProductsResponse, error)
+		UpdateProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error)
+		CheckProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error)
+		CheckAndUpdateStock(ctx context.Context, in *CheckAndUpdateStockRequest, opts ...grpc.CallOption) (*CheckAndUpdateStockResponse, error)
+		RollbackProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error)
+		DecStock(ctx context.Context, in *DecStockRequest, opts ...grpc.CallOption) (*DecStockResponse, error)
+		DecStockRevert(ctx context.Context, in *DecStockRequest, opts ...grpc.CallOption) (*DecStockResponse, error)
 	}
 
 	defaultProduct struct {
@@ -33,7 +54,52 @@ func NewProduct(cli zrpc.Client) Product {
 	}
 }
 
-func (m *defaultProduct) GetProducts(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error) {
+func (m *defaultProduct) GetProductByID(ctx context.Context, in *GetProductByIDRequest, opts ...grpc.CallOption) (*GetProductByIDResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.GetProductByID(ctx, in, opts...)
+}
+
+func (m *defaultProduct) GetProducts(ctx context.Context, in *GetProductsRequest, opts ...grpc.CallOption) (*GetProductsResponse, error) {
 	client := product.NewProductClient(m.cli.Conn())
 	return client.GetProducts(ctx, in, opts...)
+}
+
+func (m *defaultProduct) ListProducts(ctx context.Context, in *ListProductsRequest, opts ...grpc.CallOption) (*ListProductsResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.ListProducts(ctx, in, opts...)
+}
+
+func (m *defaultProduct) OperateProducts(ctx context.Context, in *OperateProductsRequest, opts ...grpc.CallOption) (*OperateProductsResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.OperateProducts(ctx, in, opts...)
+}
+
+func (m *defaultProduct) UpdateProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.UpdateProductStock(ctx, in, opts...)
+}
+
+func (m *defaultProduct) CheckProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.CheckProductStock(ctx, in, opts...)
+}
+
+func (m *defaultProduct) CheckAndUpdateStock(ctx context.Context, in *CheckAndUpdateStockRequest, opts ...grpc.CallOption) (*CheckAndUpdateStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.CheckAndUpdateStock(ctx, in, opts...)
+}
+
+func (m *defaultProduct) RollbackProductStock(ctx context.Context, in *UpdateProductStockRequest, opts ...grpc.CallOption) (*UpdateProductStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.RollbackProductStock(ctx, in, opts...)
+}
+
+func (m *defaultProduct) DecStock(ctx context.Context, in *DecStockRequest, opts ...grpc.CallOption) (*DecStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.DecStock(ctx, in, opts...)
+}
+
+func (m *defaultProduct) DecStockRevert(ctx context.Context, in *DecStockRequest, opts ...grpc.CallOption) (*DecStockResponse, error) {
+	client := product.NewProductClient(m.cli.Conn())
+	return client.DecStockRevert(ctx, in, opts...)
 }

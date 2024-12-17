@@ -27,3 +27,28 @@ func (s *OrderServer) ListOrders(ctx context.Context, in *order.ListOrdersReques
 	l := logic.NewListOrdersLogic(ctx, s.svcCtx)
 	return l.ListOrders(in)
 }
+
+func (s *OrderServer) CreateOrder(ctx context.Context, in *order.CreateOrderRequest) (*order.CreateOrderResponse, error) {
+	l := logic.NewCreateOrderLogic(ctx, s.svcCtx)
+	return l.CreateOrder(in)
+}
+
+func (s *OrderServer) CreateOrderCheck(ctx context.Context, in *order.CreateOrderRequest) (*order.CreateOrderResponse, error) {
+	l := logic.NewCreateOrderCheckLogic(ctx, s.svcCtx)
+	return l.CreateOrderCheck(in)
+}
+
+func (s *OrderServer) RollbackOrder(ctx context.Context, in *order.CreateOrderRequest) (*order.CreateOrderResponse, error) {
+	l := logic.NewRollbackOrderLogic(ctx, s.svcCtx)
+	return l.RollbackOrder(in)
+}
+
+func (s *OrderServer) SubmitOrderDTM(ctx context.Context, in *order.SubmitOrderDTMRequest) (*order.SubmitOrderDTMResponse, error) {
+	l := logic.NewSubmitOrderDTMLogic(ctx, s.svcCtx)
+	return l.SubmitOrderDTM(in)
+}
+
+func (s *OrderServer) GetOrderByID(ctx context.Context, in *order.GetOrderRequest) (*order.GetOrderResponse, error) {
+	l := logic.NewGetOrderByIDLogic(ctx, s.svcCtx)
+	return l.GetOrderByID(in)
+}

@@ -23,8 +23,8 @@ func NewGetProductsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetPr
 	}
 }
 
-func (l *GetProductsLogic) GetProducts(in *product.GetProductRequest) (*product.GetProductResponse, error) {
+func (l *GetProductsLogic) GetProducts(in *product.GetProductsRequest) (*product.GetProductsResponse, error) {
 	// todo: add your logic here and delete this line
 
-	return &product.GetProductResponse{}, nil
+	return &product.GetProductsResponse{}, nil
 }

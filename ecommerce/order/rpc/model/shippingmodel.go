@@ -1,6 +1,9 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ ShippingModel = (*customShippingModel)(nil)
 
@@ -9,7 +12,6 @@ type (
 	// and implement the added methods in customShippingModel.
 	ShippingModel interface {
 		shippingModel
-		withSession(session sqlx.Session) ShippingModel
 	}
 
 	customShippingModel struct {
@@ -18,12 +20,8 @@ type (
 )
 
 // NewShippingModel returns a model for the database table.
-func NewShippingModel(conn sqlx.SqlConn) ShippingModel {
+func NewShippingModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) ShippingModel {
 	return &customShippingModel{
-		defaultShippingModel: newShippingModel(conn),
+		defaultShippingModel: newShippingModel(conn, c, opts...),
 	}
-}
-
-func (m *customShippingModel) withSession(session sqlx.Session) ShippingModel {
-	return NewShippingModel(sqlx.NewSqlConnFromSession(session))
 }

@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
 )
@@ -21,6 +23,8 @@ var (
 	shippingRows                = strings.Join(shippingFieldNames, ",")
 	shippingRowsExpectAutoSet   = strings.Join(stringx.Remove(shippingFieldNames, "id", "create_at", "create_time", "created_at", "update_at", "update_time", "updated_at"), ",")
 	shippingRowsWithPlaceHolder = builder.PostgreSqlJoin(stringx.Remove(shippingFieldNames, "id", "create_at", "create_time", "created_at", "update_at", "update_time", "updated_at"))
+
+	cachePublicShippingIdPrefix = "cache:public:shipping:id:"
 )
 
 type (
@@ -32,7 +36,7 @@ type (
 	}
 
 	defaultShippingModel struct {
-		conn  sqlx.SqlConn
+		sqlc.CachedConn
 		table string
 	}
 
@@ -52,27 +56,33 @@ type (
 	}
 )
 
-func newShippingModel(conn sqlx.SqlConn) *defaultShippingModel {
+func newShippingModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultShippingModel {
 	return &defaultShippingModel{
-		conn:  conn,
-		table: `"public"."shipping"`,
+		CachedConn: sqlc.NewConn(conn, c, opts...),
+		table:      `"public"."shipping"`,
 	}
 }
 
 func (m *defaultShippingModel) Delete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("delete from %s where id = $1", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	publicShippingIdKey := fmt.Sprintf("%s%v", cachePublicShippingIdPrefix, id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where id = $1", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, publicShippingIdKey)
 	return err
 }
 
 func (m *defaultShippingModel) FindOne(ctx context.Context, id int64) (*Shipping, error) {
-	query := fmt.Sprintf("select %s from %s where id = $1 limit 1", shippingRows, m.table)
+	publicShippingIdKey := fmt.Sprintf("%s%v", cachePublicShippingIdPrefix, id)
 	var resp Shipping
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
+	err := m.QueryRowCtx(ctx, &resp, publicShippingIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where id = $1 limit 1", shippingRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -80,15 +90,30 @@ func (m *defaultShippingModel) FindOne(ctx context.Context, id int64) (*Shipping
 }
 
 func (m *defaultShippingModel) Insert(ctx context.Context, data *Shipping) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)", m.table, shippingRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Orderid, data.Userid, data.ReceiverName, data.ReceiverPhone, data.ReceiverMobile, data.ReceiverProvince, data.ReceiverCity, data.ReceiverDistrict, data.ReceiverAddress)
+	publicShippingIdKey := fmt.Sprintf("%s%v", cachePublicShippingIdPrefix, data.Id)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)", m.table, shippingRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Orderid, data.Userid, data.ReceiverName, data.ReceiverPhone, data.ReceiverMobile, data.ReceiverProvince, data.ReceiverCity, data.ReceiverDistrict, data.ReceiverAddress)
+	}, publicShippingIdKey)
 	return ret, err
 }
 
 func (m *defaultShippingModel) Update(ctx context.Context, data *Shipping) error {
-	query := fmt.Sprintf("update %s set %s where id = $1", m.table, shippingRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.Id, data.Orderid, data.Userid, data.ReceiverName, data.ReceiverPhone, data.ReceiverMobile, data.ReceiverProvince, data.ReceiverCity, data.ReceiverDistrict, data.ReceiverAddress)
+	publicShippingIdKey := fmt.Sprintf("%s%v", cachePublicShippingIdPrefix, data.Id)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where id = $1", m.table, shippingRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, data.Id, data.Orderid, data.Userid, data.ReceiverName, data.ReceiverPhone, data.ReceiverMobile, data.ReceiverProvince, data.ReceiverCity, data.ReceiverDistrict, data.ReceiverAddress)
+	}, publicShippingIdKey)
 	return err
+}
+
+func (m *defaultShippingModel) formatPrimary(primary any) string {
+	return fmt.Sprintf("%s%v", cachePublicShippingIdPrefix, primary)
+}
+
+func (m *defaultShippingModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {
+	query := fmt.Sprintf("select %s from %s where id = $1 limit 1", shippingRows, m.table)
+	return conn.QueryRowCtx(ctx, v, query, primary)
 }
 
 func (m *defaultShippingModel) tableName() string {

@@ -1,6 +1,9 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ OrderitemModel = (*customOrderitemModel)(nil)
 
@@ -9,7 +12,6 @@ type (
 	// and implement the added methods in customOrderitemModel.
 	OrderitemModel interface {
 		orderitemModel
-		withSession(session sqlx.Session) OrderitemModel
 	}
 
 	customOrderitemModel struct {
@@ -18,12 +20,8 @@ type (
 )
 
 // NewOrderitemModel returns a model for the database table.
-func NewOrderitemModel(conn sqlx.SqlConn) OrderitemModel {
+func NewOrderitemModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) OrderitemModel {
 	return &customOrderitemModel{
-		defaultOrderitemModel: newOrderitemModel(conn),
+		defaultOrderitemModel: newOrderitemModel(conn, c, opts...),
 	}
-}
-
-func (m *customOrderitemModel) withSession(session sqlx.Session) OrderitemModel {
-	return NewOrderitemModel(sqlx.NewSqlConnFromSession(session))
 }

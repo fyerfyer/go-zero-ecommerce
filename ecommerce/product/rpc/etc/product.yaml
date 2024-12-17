@@ -4,3 +4,15 @@ Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: product.rpc
+
+DataSource: postgres://postgres:pa55word@172.17.0.2:5432/payment
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Pass: 
+    Type: node
+
+ProductRedis:
+  - Host: 127.0.0.1:6379
+    Pass:
+    Type: node

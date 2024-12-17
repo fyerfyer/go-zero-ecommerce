@@ -4,3 +4,11 @@ Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: order.rpc
+
+# temporary config
+# to do: read docker env variable
+DataSource: postgres://postgres:pa55word@172.17.0.2:5432/orders
+CacheRedis: 
+  - Host: 127.0.0.1:6379
+    Pass:
+    Type: node

@@ -1,6 +1,9 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ ProductModel = (*customProductModel)(nil)
 
@@ -9,7 +12,6 @@ type (
 	// and implement the added methods in customProductModel.
 	ProductModel interface {
 		productModel
-		withSession(session sqlx.Session) ProductModel
 	}
 
 	customProductModel struct {
@@ -18,12 +20,8 @@ type (
 )
 
 // NewProductModel returns a model for the database table.
-func NewProductModel(conn sqlx.SqlConn) ProductModel {
+func NewProductModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) ProductModel {
 	return &customProductModel{
-		defaultProductModel: newProductModel(conn),
+		defaultProductModel: newProductModel(conn, c, opts...),
 	}
-}
-
-func (m *customProductModel) withSession(session sqlx.Session) ProductModel {
-	return NewProductModel(sqlx.NewSqlConnFromSession(session))
 }

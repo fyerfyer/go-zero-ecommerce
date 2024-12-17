@@ -14,12 +14,23 @@ import (
 )
 
 type (
-	ListOrdersRequest  = order.ListOrdersRequest
-	ListOrdersResponse = order.ListOrdersResponse
-	OrderItem          = order.OrderItem
+	CreateOrderRequest     = order.CreateOrderRequest
+	CreateOrderResponse    = order.CreateOrderResponse
+	GetOrderRequest        = order.GetOrderRequest
+	GetOrderResponse       = order.GetOrderResponse
+	ListOrdersRequest      = order.ListOrdersRequest
+	ListOrdersResponse     = order.ListOrdersResponse
+	OrderItem              = order.OrderItem
+	SubmitOrderDTMRequest  = order.SubmitOrderDTMRequest
+	SubmitOrderDTMResponse = order.SubmitOrderDTMResponse
 
 	Order interface {
 		ListOrders(ctx context.Context, in *ListOrdersRequest, opts ...grpc.CallOption) (*ListOrdersResponse, error)
+		CreateOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
+		CreateOrderCheck(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
+		RollbackOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error)
+		SubmitOrderDTM(ctx context.Context, in *SubmitOrderDTMRequest, opts ...grpc.CallOption) (*SubmitOrderDTMResponse, error)
+		GetOrderByID(ctx context.Context, in *GetOrderRequest, opts ...grpc.CallOption) (*GetOrderResponse, error)
 	}
 
 	defaultOrder struct {
@@ -36,4 +47,29 @@ func NewOrder(cli zrpc.Client) Order {
 func (m *defaultOrder) ListOrders(ctx context.Context, in *ListOrdersRequest, opts ...grpc.CallOption) (*ListOrdersResponse, error) {
 	client := order.NewOrderClient(m.cli.Conn())
 	return client.ListOrders(ctx, in, opts...)
+}
+
+func (m *defaultOrder) CreateOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.CreateOrder(ctx, in, opts...)
+}
+
+func (m *defaultOrder) CreateOrderCheck(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.CreateOrderCheck(ctx, in, opts...)
+}
+
+func (m *defaultOrder) RollbackOrder(ctx context.Context, in *CreateOrderRequest, opts ...grpc.CallOption) (*CreateOrderResponse, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.RollbackOrder(ctx, in, opts...)
+}
+
+func (m *defaultOrder) SubmitOrderDTM(ctx context.Context, in *SubmitOrderDTMRequest, opts ...grpc.CallOption) (*SubmitOrderDTMResponse, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.SubmitOrderDTM(ctx, in, opts...)
+}
+
+func (m *defaultOrder) GetOrderByID(ctx context.Context, in *GetOrderRequest, opts ...grpc.CallOption) (*GetOrderResponse, error) {
+	client := order.NewOrderClient(m.cli.Conn())
+	return client.GetOrderByID(ctx, in, opts...)
 }
