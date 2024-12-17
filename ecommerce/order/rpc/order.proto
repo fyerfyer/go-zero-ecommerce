@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package order;
+option go_package="./order";
+
+
+service Order {
+    rpc ListOrders(ListOrdersRequest) returns(ListOrdersResponse);
+}
+
+message ListOrdersRequest {
+    int64 user_id = 1;
+    int32 status = 2;
+    int64 cursor = 3;
+    int32 page_size = 4;
+}
+
+message ListOrdersResponse {
+    repeated OrderItem orders = 1;
+    bool is_end = 2;
+    string create_time = 3;
+}
+
+message OrderItem {
+    int64 id = 1;          // Order唯一标识符，主键
+    string order_id = 2;   // 订单唯一标识符，用户友好ID
+    int64 user_id = 3;     
+    int64 product_id = 4;  // 产品的唯一标识符
+    string name = 5;
+    string image = 6;
+    double current_unit_price = 7;
+    int64 quantity = 8;
+    double totalprice = 9;
+    int64 createTime = 10;
+    int64 updateTime = 11;
+}
