@@ -9,5 +9,6 @@ type Config struct {
 	zrpc.RpcServerConf
 	DataSource string
 	CacheRedis cache.CacheConf
+	UserRPC    zrpc.RpcClientConf
 	ProductRpc zrpc.RpcClientConf
 }

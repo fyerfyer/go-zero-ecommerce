@@ -96,7 +96,6 @@ func (o *customOrdersModel) TxUpdate(tx *sql.Tx, data *Orders) error {
 func (o *customOrdersModel) TxInsert(tx *sql.Tx, data *Orders) (sql.Result, error) {
 	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES ($1, $2, $3, $4, $5, $6, $7)",
 		o.table, ordersRowsExpectAutoSet)
-	ret, err := tx.Exec(query, data.Id, data.Userid, data.Shoppingid,
+	return tx.Exec(query, data.Id, data.Userid, data.Shoppingid,
 		data.Payment, data.Paymenttype, data.Postage, data.Status)
-	return ret, err
 }

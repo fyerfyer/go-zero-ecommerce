@@ -2,15 +2,14 @@ package logic
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jinzhu/copier"
 
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/order/rpc/model"
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/user/rpc/internal/svc"
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/user/rpc/user"
+	"github.com/fyerfyer/go-zero-ecommerce/pkg/e"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -34,11 +33,19 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.GetUserInfoRequest) (*user.GetUs
 	u, err := l.svcCtx.UsersModel.FindOne(l.ctx, in.GetId())
 	if err != nil {
 		if err == model.ErrNotFound {
-			return nil, status.Error(codes.Internal,
-				fmt.Sprintf("[UserModel.FindOne]:user not found:%v", err))
+			return nil, e.HandleError(
+				codes.NotFound,
+				err,
+				"user not found",
+				"UserModel.FindOne",
+			)
 		} else {
-			return nil, status.Error(codes.Internal,
-				fmt.Sprintf("[UserModel.FindOne]:%v", err))
+			return nil, e.HandleError(
+				codes.Internal,
+				err,
+				"",
+				"UserModel.FindOne",
+			)
 		}
 	}
 

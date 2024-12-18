@@ -47,9 +47,9 @@ type (
 		ProductId    int64     `db:"product_id"`
 		ProductName  string    `db:"product_name"`
 		ProductImage string    `db:"product_image"`
-		CurrentPrice int64     `db:"current_price"`
+		CurrentPrice float64   `db:"current_price"`
 		Quantity     int64     `db:"quantity"`
-		TotalPrice   int64     `db:"total_price"`
+		TotalPrice   float64   `db:"total_price"`
 		CreateTime   time.Time `db:"create_time"`
 		UpdateTime   time.Time `db:"update_time"`
 	}

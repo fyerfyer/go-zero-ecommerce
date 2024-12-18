@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/product/rpc/internal/svc"
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/product/rpc/product"
+	"github.com/fyerfyer/go-zero-ecommerce/pkg/e"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -34,17 +34,23 @@ func (l *DecStockLogic) DecStock(in *product.DecStockRequest) (*product.DecStock
 	// todo: add your logic here and delete this line
 	db, err := l.svcCtx.SqlConn.RawDB()
 	if err != nil {
-		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("[svcCtx.SqlConn.RawDB]:failed to get db:%s",
-				err.Error()))
+		return nil, e.HandleError(
+			codes.Internal,
+			err,
+			"failed to connect to database",
+			"SqlConn.RawDB()",
+		)
 	}
 
 	// 使用dtm处理分布式事务
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	if err != nil {
-		return nil, status.Error(codes.Internal,
-			fmt.Sprintf("[dtmgrpc.BarrierFromGrpc]:failed to create barrier:%s",
-				err.Error()))
+		return nil, e.HandleError(
+			codes.Internal,
+			err,
+			"failed to create barrier",
+			"dtmgrpc.BarrierFromGrpc",
+		)
 	}
 
 	err = barrier.CallWithDB(db, func(tx *sql.Tx) error {
@@ -62,11 +68,13 @@ func (l *DecStockLogic) DecStock(in *product.DecStockRequest) (*product.DecStock
 
 		return err
 	})
+
 	// 如果库存不足，回滚事务
 	if errors.Is(err, dtmcli.ErrFailure) {
 		return nil, status.Error(codes.Aborted, dtmcli.ResultFailure)
 	}
 
+	// 直接返回，数据库的tx替我们回滚了
 	if err != nil {
 		return nil, err
 	}

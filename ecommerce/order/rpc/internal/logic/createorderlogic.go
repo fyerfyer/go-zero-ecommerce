@@ -9,8 +9,8 @@ import (
 
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/order/rpc/internal/svc"
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/order/rpc/order"
+	"github.com/fyerfyer/go-zero-ecommerce/pkg/e"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,7 +35,12 @@ func (l *CreateOrderLogic) CreateOrder(in *order.CreateOrderRequest) (*order.Cre
 	err := l.svcCtx.OrdersModel.Create(l.ctx, orderID, in.UserId, in.ProductId)
 	if err != nil {
 		logx.Errorf("[OrderModel.CreateOrder]failed to create order:%v", err)
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, e.HandleError(
+			codes.Internal,
+			err,
+			"failed to create order",
+			"OrderModel.CreateOrder",
+		)
 	}
 	return &order.CreateOrderResponse{}, nil
 }

@@ -24,9 +24,9 @@ CREATE TABLE orderitem (
     product_id BIGINT NOT NULL DEFAULT 0, -- 商品ID
     product_name VARCHAR(100) NOT NULL DEFAULT '', -- 商品名称
     product_image VARCHAR(500) NOT NULL DEFAULT '', -- 商品图片
-    current_price NUMERIC(20,2) NOT NULL DEFAULT 0, -- 商品单价
+    current_price DOUBLE PRECISION NOT NULL DEFAULT 0, -- 商品单价
     quantity INTEGER NOT NULL DEFAULT 0, -- 商品数量
-    total_price NUMERIC(20,2) NOT NULL DEFAULT 0, -- 商品总价
+    total_price DOUBLE PRECISION NOT NULL DEFAULT 0, -- 商品总价
     create_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 创建时间
     update_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- 更新时间
 );
