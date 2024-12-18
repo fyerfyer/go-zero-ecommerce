@@ -80,7 +80,7 @@ func (s *ServiceContext) consume(ch chan *KafkaMsg) {
 	}
 }
 
-func (s *ServiceContext) Consume(_ string, value string) error {
+func (s *ServiceContext) Consume(ctx context.Context, _ string, value string) error {
 	logx.Infof("Consume value: %s\n", value)
 	var data []*KafkaMsg
 	if err := json.Unmarshal([]byte(value), &data); err != nil {

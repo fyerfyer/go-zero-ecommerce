@@ -21,7 +21,9 @@ type ServiceContext struct {
 	ProductRedis   *redis.Redis
 	SingleGroup    singleflight.Group
 	LocalCache     *collection.Cache
-	orm            *gorm.DB
+
+	orm     *gorm.DB
+	SqlConn sqlx.SqlConn
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -50,5 +52,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 			redis.WithPass(c.ProductRedis.Pass)),
 		LocalCache: localCache,
 		orm:        ormDB,
+		SqlConn:    conn,
 	}
 }

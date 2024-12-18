@@ -18,7 +18,7 @@ type (
 	// and implement the added methods in customOrdersModel.
 	OrdersModel interface {
 		ordersModel
-		FindOneByID(ctx context.Context, id int64) (*Orders, error)
+		FindOneByUserID(ctx context.Context, id int64) (*Orders, error)
 		Create(ctx context.Context, orderID string, userID, productID int64) error
 		UpdateStatus(ctx context.Context, orderID string, status int) error
 		TxInsert(tx *sql.Tx, data *Orders) (sql.Result, error)
@@ -37,7 +37,7 @@ func NewOrdersModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) 
 	}
 }
 
-func (o *customOrdersModel) FindOneByID(ctx context.Context, uid int64) (*Orders, error) {
+func (o *customOrdersModel) FindOneByUserID(ctx context.Context, uid int64) (*Orders, error) {
 	var resp Orders
 
 	query := fmt.Sprintf("select %s from %s where \"uid\" = $1 order by create_time desc limit 1",

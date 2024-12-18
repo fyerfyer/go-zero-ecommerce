@@ -5,6 +5,8 @@ import (
 
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/product/rpc/internal/svc"
 	"github.com/fyerfyer/go-zero-ecommerce/ecommerce/product/rpc/product"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,6 +27,14 @@ func NewCheckProductStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 
 func (l *CheckProductStockLogic) CheckProductStock(in *product.UpdateProductStockRequest) (*product.UpdateProductStockResponse, error) {
 	// todo: add your logic here and delete this line
+	p, err := l.svcCtx.ProductModel.FindOne(l.ctx, in.GetProductId())
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 
+	if p.Stock < in.Num {
+		return nil, status.Error(codes.ResourceExhausted,
+			"not having enough stock")
+	}
 	return &product.UpdateProductStockResponse{}, nil
 }
