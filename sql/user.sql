@@ -1,8 +1,8 @@
--- 数据库: user
-CREATE DATABASE user;
-\c user;
+-- 数据库: users
+CREATE DATABASE users;
+\c users;
 
-CREATE TABLE "user" (
+CREATE TABLE "users" (
     id BIGSERIAL PRIMARY KEY,                  -- 用户ID
     username VARCHAR(50) NOT NULL DEFAULT '',  -- 用户名
     password VARCHAR(50) NOT NULL DEFAULT '',  -- 用户密码，MD5加密
@@ -13,13 +13,13 @@ CREATE TABLE "user" (
     update_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- 更新时间
 );
 
-CREATE UNIQUE INDEX uniq_phone ON "user" (phone);
-CREATE UNIQUE INDEX uniq_username ON "user" (username);
-CREATE INDEX ix_update_time_user ON "user" (update_time);
+CREATE UNIQUE INDEX uniq_phone ON "users" (phone);
+CREATE UNIQUE INDEX uniq_username ON "users" (username);
+CREATE INDEX ix_update_time_users ON "users" (update_time);
 
-COMMENT ON TABLE "user" IS '用户表';
+COMMENT ON TABLE "users" IS '用户表';
 
-CREATE TABLE user_receive_address (
+CREATE TABLE users_receive_address (
     id BIGSERIAL PRIMARY KEY,
     uid BIGINT NOT NULL DEFAULT 0, -- 用户id
     name VARCHAR(64) NOT NULL DEFAULT '', -- 收货人名称
@@ -35,5 +35,17 @@ CREATE TABLE user_receive_address (
     update_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- 数据更新时间
 );
 
-CREATE INDEX idx_uid ON user_receive_address (uid);
-COMMENT ON TABLE user_receive_address IS '用户收货地址表';
+CREATE INDEX idx_uid ON users_receive_address (uid);
+COMMENT ON TABLE users_receive_address IS '用户收货地址表';
+
+CREATE TABLE users_collection (
+    id BIGSERIAL PRIMARY KEY, -- 收藏Id
+    uid BIGINT NOT NULL DEFAULT 0, -- 用户id
+    product_id BIGINT NOT NULL DEFAULT 0, -- 商品id
+    is_delete BOOLEAN NOT NULL DEFAULT FALSE, -- 是否删除
+    create_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 数据创建时间[禁止在代码中赋值]
+    update_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 数据更新时间[禁止在代码中赋值]
+    CONSTRAINT uniq_uid_product_id UNIQUE (uid, product_id)
+);
+
+COMMENT ON TABLE users_collection IS '用户收藏表';

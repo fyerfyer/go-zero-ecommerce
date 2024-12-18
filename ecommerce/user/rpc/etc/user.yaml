@@ -1,0 +1,15 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:8082
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: user.rpc
+
+DataSource: postgres://postgres:pa55word@172.17.0.2:5432/users
+
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Psss: 
+    Type: node
+
+Salt: HWVOFkGgPTryzICwd7qnJaZR9KQ2i8xe

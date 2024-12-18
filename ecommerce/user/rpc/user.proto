@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user";
+
+service User {
+    rpc Login(LoginRequest) returns (LoginResponse);
+    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+    rpc AddUserReceiveAddress(AddUserReceiveAddressRequest) returns (AddUserReceiveAddressResponse);
+    rpc EditUserReceiveAddress(EditUserReceiveAddressRequest) returns (EditUserReceiveAddressResponse);
+    rpc DeleteUserReceiveAddress(DeleteUserReceiveAddressRequest) returns (DeleteUserReceiveAddressResponse);
+    rpc GetUserReceiveAddressList(GetUserReceiveAddressListRequest) returns (GetUserReceiveAddressListResponse);
+    rpc AddUserCollection(AddUserCollectionRequest) returns (AddUserCollectionResponse);
+    rpc DeleteUserCollection(DeleteUserCollectionRequest) returns (DeleteUserCollectionResponse);
+    rpc GetUserCollectionList(GetUserCollectionListRequest) returns (GetUserCollectionListResponse);
+    rpc GetUserReceiveAddressInfo(GetUserReceiveAddressInfoRequest) returns (UserReceiveAddress);
+}
+
+message UserInfo {
+    uint64 id = 1;         
+    string username = 2;   
+    string password = 3;  
+    string phone = 4;      
+    string question = 5; 
+    string answer = 6;     
+    int64 create_time = 7; 
+    int64 update_time = 8;
+}
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    int64 id = 1;
+    string username = 2;
+    string phone = 3;
+}
+
+message GetUserInfoRequest {
+    int64 id = 1;
+}
+
+message GetUserInfoResponse {
+    UserInfo user = 1;
+}
+
+message AddUserReceiveAddressRequest {
+    int64 user_id = 1;        
+    string name = 2;       
+    string phone = 3;      
+    bool is_default = 4;  
+    string post_code = 5;  
+    string province = 6; 
+    string city = 7;      
+    string region = 8;    
+    string detailed_address = 9;
+}
+
+message AddUserReceiveAddressResponse {}
+
+message GetUserReceiveAddressListRequest {
+    int64 user_id = 1;
+}
+
+message UserReceiveAddress {
+    int64 id = 1;
+    int64 user_id = 2;
+    string name = 3;
+    string phone = 4;
+    bool is_default = 5;
+    string post_code = 6;
+    string province = 7;
+    string city = 8;
+    string region = 9;
+    string detailed_address = 10;
+    int32 is_deleted = 11;
+    int64 create_time = 12;
+    int64 update_time = 13;
+}
+
+message GetUserReceiveAddressListResponse {
+    repeated UserReceiveAddress list = 1;
+}
+
+message EditUserReceiveAddressRequest {
+    int64 id = 1;
+    string name = 2;
+    string phone = 3;
+    bool is_default = 4;
+    string post_code = 5;
+    string province = 6;
+    string city = 7;
+    string region = 8;
+    string detailed_address = 9;
+}
+
+message EditUserReceiveAddressResponse {}
+
+message DeleteUserReceiveAddressRequest {
+    int64 id = 1;
+}
+
+message DeleteUserReceiveAddressResponse {}
+
+message AddUserCollectionRequest {
+    int64 user_id = 1;
+    int64 product_id = 2;
+}
+
+message AddUserCollectionResponse {}
+
+message DeleteUserCollectionRequest {
+    int64 id = 1;
+}
+
+message DeleteUserCollectionResponse {}
+
+message GetUserCollectionListRequest {
+    int64 user_id = 1;
+}
+
+message GetUserCollectionListResponse {
+    repeated int64 product_ids = 1;
+}
+
+message GetUserReceiveAddressInfoRequest {
+    int64 id = 1;
+}

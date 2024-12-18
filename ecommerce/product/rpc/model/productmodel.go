@@ -10,10 +10,6 @@ import (
 
 var _ ProductModel = (*customProductModel)(nil)
 
-var (
-	cacheProductProductIdPrefix = "cache:product:product:id:"
-)
-
 type (
 	// ProductModel is an interface to be customized, add more methods here,
 	// and implement the added methods in customProductModel.
@@ -48,7 +44,7 @@ func (p *customProductModel) ProductCategory(ctx context.Context, time string, c
 }
 
 func (p *customProductModel) UpdateProductStock(ctx context.Context, productID, num int64) error {
-	productProductIdKey := fmt.Sprintf("%s%v", cacheProductProductIdPrefix, productID)
+	productProductIdKey := fmt.Sprintf("%s%v", cachePublicProductIdPrefix, productID)
 	_, err := p.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
 		return conn.ExecCtx(ctx, fmt.Sprintf(
 			"UPDATE %s SET stock = stock - $1 WHERE id = $2 AND stock > 0",
@@ -58,7 +54,7 @@ func (p *customProductModel) UpdateProductStock(ctx context.Context, productID, 
 }
 
 func (p *customProductModel) TxUpdateStock(tx *sql.Tx, id int64, num int) (sql.Result, error) {
-	productIdKey := fmt.Sprintf("%s%v", cacheProductProductIdPrefix, id)
+	productIdKey := fmt.Sprintf("%s%v", cachePublicProductIdPrefix, id)
 	return p.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf(
 			"UPDATE %s SET stock = stock + $1 WHERE stock >= -$2 AND id=$3",

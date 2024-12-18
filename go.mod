@@ -3,7 +3,9 @@ module github.com/fyerfyer/go-zero-ecommerce
 go 1.23.1
 
 require (
+	github.com/dtm-labs/dtmcli v1.15.0
 	github.com/dtm-labs/dtmgrpc v1.15.0
+	github.com/jinzhu/copier v0.4.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/lib/pq v1.10.9
 	github.com/zeromicro/go-queue v1.2.2
@@ -22,7 +24,6 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/dtm-labs/dtmcli v1.15.0 // indirect
 	github.com/dtm-labs/dtmdriver v0.0.3 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/fatih/color v1.18.0 // indirect
