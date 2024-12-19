@@ -1,0 +1,21 @@
+syntax = "v1"
+
+info (
+	title: "ProductAPI"
+	desc: "API for product service"
+	author: "fyerfyer"
+	email: "fyerfyer@gmail.com"
+	version: "v1"
+)
+
+type ProductItem {
+	ProductID   int64
+	Name        string
+	Description string
+	ImageUrl    string
+	CreateTime  int64
+	Stock       int64
+	CategoryID  int64
+	Price       float64
+	Status      int64
+}

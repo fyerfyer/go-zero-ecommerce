@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package comment;
+option go_package="./comment";
+
+service Comment {
+    rpc AddComment(AddCommentRequest) returns (AddCommentResponse);
+    rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse);
+    rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse);
+}
+
+message AddCommentRequest {
+    int64 user_id = 1;
+    int64 product_id = 2;
+    string order_id = 3;
+    string content = 4;
+}
+
+message AddCommentResponse {}
+
+message DeleteCommentRequest {
+    int64 comment_id = 1;
+}
+
+message DeleteCommentResponse {}
+
+// 获取关于某商品的所有评论
+message ListCommentsRequest {
+    string product_ids = 1;
+}
+
+message CommentItem {
+    int64 comment_id = 1;
+    int64 user_id = 2;
+    int64 content = 3;
+    int64 created_time = 4;
+}
+
+message ListCommentsResponse {
+    repeated CommentItem comments = 1;
+}

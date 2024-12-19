@@ -1,18 +1,26 @@
--- 数据库: payment
 CREATE DATABASE payment;
 \c payment;
 
-CREATE TABLE payinfo (
-    id BIGSERIAL PRIMARY KEY, -- 支付信息表ID
-    orderid UUID NOT NULL, -- 订单ID
-    userid BIGINT NOT NULL DEFAULT 0, -- 用户ID
-    payplatform SMALLINT NOT NULL DEFAULT 0, -- 支付平台
-    platformnumber VARCHAR(200) NOT NULL DEFAULT '', -- 支付流水号
-    platformstatus VARCHAR(20) NOT NULL DEFAULT '', -- 支付状态
-    create_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 创建时间
-    update_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP -- 更新时间
+CREATE TABLE payments (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    order_id VARCHAR(64) NOT NULL,
+    amount DOUBLE PRECISION NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    transaction_id VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ix_orderid_pay ON payinfo (orderid);
-CREATE INDEX ix_userid_pay ON payinfo (userid);
-COMMENT ON TABLE payinfo IS '支付信息表';
+CREATE INDEX idx_payments_user_id ON payments(user_id);
+CREATE INDEX idx_payments_order_id ON payments(order_id);
+CREATE INDEX idx_payments_status ON payments(status);
+
+CREATE TABLE refunds (
+    id BIGSERIAL PRIMARY KEY,
+    transaction_id VARCHAR(255) NOT NULL REFERENCES payments(transaction_id),
+    amount DOUBLE PRECISION NOT NULL,
+    refunded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_refunds_transaction_id ON refunds(transaction_id);

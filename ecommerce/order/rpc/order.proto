@@ -6,11 +6,7 @@ option go_package="./order";
 
 service Order {
     rpc ListOrders(ListOrdersRequest) returns(ListOrdersResponse);
-    rpc CreateOrder(CreateOrderRequest) returns(CreateOrderResponse);
-    rpc CreateOrderCheck(CreateOrderRequest) returns (CreateOrderResponse);
-    rpc RollbackOrder (CreateOrderRequest) returns (CreateOrderResponse);
     rpc SubmitOrderDTM(SubmitOrderDTMRequest) returns(SubmitOrderDTMResponse);
-    rpc GetOrderByID(GetOrderRequest) returns(GetOrderResponse);
 }
 
 message ListOrdersRequest {
@@ -38,14 +34,6 @@ message OrderItem {
     int64 update_time = 9;
 }
 
-message CreateOrderRequest {
-    int64 user_id = 1;
-    int64 product_id = 2;
-}
-  
-message CreateOrderResponse {
-}
-
 message SubmitOrderDTMRequest {
     int64 user_id = 1;
     int64 product_id = 2;
@@ -56,12 +44,4 @@ message SubmitOrderDTMRequest {
 
 message SubmitOrderDTMResponse {
     string id = 1;
-}
-
-message GetOrderRequest {
-    int64 id = 1;
-}
-
-message GetOrderResponse {
-    OrderItem order = 1;
 }

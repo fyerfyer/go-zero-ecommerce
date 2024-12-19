@@ -1,0 +1,13 @@
+Name: payment.rpc
+ListenOn: 0.0.0.0:8083
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: payment.rpc
+
+DataSource: postgres://postgres:pa55word@172.17.0.2:5432/payment
+
+CacheRedis: 
+  - Host: 127.0.0.1:6379
+    Pass:
+    Type: node

@@ -69,8 +69,8 @@ func (s *ServiceContext) consume(ch chan *KafkaMsg) {
 			logx.Errorf("[productRPC.CheckAndUpdateStock]:rpc method failed:%v", err)
 			return
 		}
-		_, err = s.OrderRPC.CreateOrder(context.Background(),
-			&order.CreateOrderRequest{
+		_, err = s.OrderRPC.SubmitOrderDTM(context.Background(),
+			&order.SubmitOrderDTMRequest{
 				UserId:    msg.UserID,
 				ProductId: msg.ProductID,
 			})

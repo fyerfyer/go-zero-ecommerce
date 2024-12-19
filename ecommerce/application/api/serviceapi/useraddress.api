@@ -1,0 +1,74 @@
+syntax = "v1"
+
+info (
+	title: "UserAPI"
+	desc: "API for user service"
+	author: "fyerfyer"
+	email: "fyerfyer@gmail.com"
+	version: "v1"
+)
+
+type UserReceiveAddress {
+	UserID          int64
+	Name            string
+	Phone           string
+	IsDefault       bool
+	PostCode        string
+	Province        string
+	City            string
+	Region          string
+	DetailedAddress string
+	IsDeleted       int32
+	CreateTime      int64
+	UpdateTime      int64
+}
+
+type (
+	GetUserReceiveAddressListRequest {
+		UserID int64
+	}
+
+	GetUserReceiveAddressListResponse {
+		Addresses []*UserReceiveAddress
+	}
+
+    AddUserReceiveAddressRequest {
+        UserID          int64
+		Name            string
+		Phone           string
+		IsDefault       bool
+		PostCode        string
+		Province        string
+		City            string
+		Region          string
+		DetailedAddress string
+    }
+
+    AddUserReceiveAddressResponse{
+		Message string 
+	}
+
+	EditUserReceiveAddressRequest {
+		UserID          int64
+		Name            string
+		Phone           string
+		IsDefault       bool
+		PostCode        string
+		Province        string
+		City            string
+		Region          string
+		DetailedAddress string
+	}
+
+    EditUserReceiveAddressResponse {
+		Message string 
+	}
+
+    DeleteUserReceiveAddressRequest {
+        ID int64
+    }
+
+    DeleteUserReceiveAddressResponse {
+		Message string 
+	}
+)

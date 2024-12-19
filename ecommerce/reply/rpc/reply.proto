@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package reply;
+option go_package="./reply";
+
+service Reply {
+    rpc AddReply(AddReplyRequest) returns (AddReplyResponse);
+    rpc DeleteReply(DeleteReplyRequest) returns (DeleteReplyResponse);
+    rpc ListReplies(ListRepliesRequest) returns (ListRepliesResponse);
+}
+
+message AddReplyRequest {
+    int64 comment_id = 1;
+    int64 user_id = 2;
+    string content = 3;
+}
+
+message AddReplyResponse {}
+
+message DeleteReplyRequest {
+    int64 reply_id = 1;
+}
+
+message DeleteReplyResponse {}
+
+message ListRepliesRequest {
+    int64 comment_id = 1;
+}
+
+message ReplyItem {
+    int64 reply_id = 1;
+    int64 user_id = 2;
+    string content = 3;
+    int64 created_time = 4;
+}
+
+message ListRepliesResponse {
+    repeated ReplyItem replies = 1;
+}

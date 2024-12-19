@@ -1,0 +1,43 @@
+syntax = "v1"
+
+info (
+	title: "UserAPI"
+	desc: "API for user service"
+	author: "fyerfyer"
+	email: "fyerfyer@gmail.com"
+	version: "v1"
+)
+
+type UserInfo {
+	ID         int64
+	Username   string
+	Password   string
+	Phone      string
+	Question   string
+	Answer     string
+	CreateTime int64
+	UpdateTime int64
+}
+
+type (
+	LoginRequest {
+		UserName string
+		Password string
+	}
+
+	LoginResponse {
+		ID       int64
+		UserName string
+		Phone    string
+	}
+)
+
+type (
+	GetUserInfoRequest {
+		ID int64
+	}
+
+	GetUserInfoResponse {
+		Info UserInfo
+	}
+)

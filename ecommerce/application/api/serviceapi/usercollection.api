@@ -1,0 +1,32 @@
+syntax = "v1"
+
+info (
+	title: "UserAPI"
+	desc: "API for user service"
+	author: "fyerfyer"
+	email: "fyerfyer@gmail.com"
+	version: "v1"
+)
+
+type (
+	AddUserCollectionRequest {
+		UserID int64
+		ProductID int64
+	}
+
+	AddUserCollectionResponse{}
+
+	DeleteUserCollectionRequest {
+		ID int64
+	}
+
+	DeleteUserCollectionResponse {}
+
+	GetUserCollectionListRequest {
+		UserID int64
+	}
+
+	GetUserCollectionListResponse {
+		ProductIDs []int64
+	}
+)

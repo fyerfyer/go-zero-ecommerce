@@ -18,7 +18,7 @@ service User {
 }
 
 message UserInfo {
-    uint64 id = 1;         
+    int64 id = 1;         
     string username = 2;   
     string password = 3;  
     string phone = 4;      

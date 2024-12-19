@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package payment;
+option go_package="./payment";
+
+
+service Payment {
+    rpc InitPayment(InitPaymentRequest) returns (InitPaymentResponse);
+    rpc VerifyPayment(VerifyPaymentRequest) returns (VerifyPaymentResponse);
+    rpc RefundPayment(RefundPaymentRequest) returns (RefundPaymentResponse);
+}
+
+message InitPaymentRequest {
+    int64 user_id = 1;
+    string order_id = 2;
+    float  amount = 3;
+    string payment_method = 4;
+}
+
+message InitPaymentResponse {
+    string transaction_id = 1;
+}
+
+// 目前功能：检验这个事务是否为已完成的
+message VerifyPaymentRequest {
+    string transaction_id = 1;
+}
+
+message VerifyPaymentResponse {
+    string order_id = 1;
+}
+
+message RefundPaymentRequest {
+    string transaction_id = 1;
+}
+
+message RefundPaymentResponse {}

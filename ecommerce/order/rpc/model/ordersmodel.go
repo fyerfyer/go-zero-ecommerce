@@ -11,8 +11,6 @@ import (
 
 var _ OrdersModel = (*customOrdersModel)(nil)
 
-var cacheOrdersIdPrefix = "cache:orders:id:"
-
 type (
 	// OrdersModel is an interface to be customized, add more methods here,
 	// and implement the added methods in customOrdersModel.
@@ -74,7 +72,7 @@ func (o *customOrdersModel) Create(ctx context.Context, orderID string, userID, 
 }
 
 func (o *customOrdersModel) UpdateStatus(ctx context.Context, orderID string, status int) error {
-	ordersOrdersIdKey := fmt.Sprintf("%s%v", cacheOrdersIdPrefix, orderID)
+	ordersOrdersIdKey := fmt.Sprintf("%s%v", cachePublicOrdersIdPrefix, orderID)
 	_, err := o.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
 		return conn.ExecCtx(ctx, fmt.Sprintf("UPDATE %s SET status = $1 WHERE id = $2", o.table),
 			status, orderID)
@@ -83,7 +81,7 @@ func (o *customOrdersModel) UpdateStatus(ctx context.Context, orderID string, st
 }
 
 func (o *customOrdersModel) TxUpdate(tx *sql.Tx, data *Orders) error {
-	productIdKey := fmt.Sprintf("%s%v", cacheOrdersIdPrefix, data.Id)
+	productIdKey := fmt.Sprintf("%s%v", cachePublicOrdersIdPrefix, data.Id)
 	_, err := o.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("UPDATE %s SET %s WHERE id = $%d",
 			o.table, ordersRowsWithPlaceHolder, len(ordersRowsWithPlaceHolder)+1)

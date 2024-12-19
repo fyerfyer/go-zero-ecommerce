@@ -1,0 +1,40 @@
+syntax = "v1"
+
+info (
+	title: "OrderAPI"
+	desc: "API for order service"
+	author: "fyerfyer"
+	email: "fyerfyer@gmail.com"
+	version: "v1"
+)
+
+type OrderItem {
+	ID          string
+	UserID      int64
+	ShoppingID  int64
+	Payment     float64
+	PaymentType int64
+	Postage     int64
+	Status      int64
+	CreateTime  int64
+	UpdateTime  int64
+}
+
+type (
+    GetOrderRequest {
+        ID int64
+    }
+
+	GetOrderResponse {
+        Item OrderItem
+    }
+
+	CreateOrderRequest {
+		UserID int64
+		ProductID int64
+	}
+
+	CreateOrderResponse {
+		Message string
+	}
+)

@@ -1,43 +1,37 @@
 syntax = "v1"
 
+import (
+	"serviceapi/order.api"
+	"serviceapi/user.api"
+	"serviceapi/useraddress.api"
+	"serviceapi/usercollection.api"
+	"serviceapi/product.api"
+)
+
 info (
 	title:   "API"
 	desc:    "API for ecommerce platform"
 	author:  "fyerfyer"
+	email:   "fyerfyer@gmail.com"
 	version: "1.0"
 )
 
-type (
-	Order {
-		OrderID            string  `json:"order_id"`
-		Status             int32   `json:"status"`
-		Quantity           int64   `json:"quantity"`
-		Payment            float64 `json:"payment"`
-		TotalPrice         float64 `json:"total_price"`
-		CreateTime         int64   `json:"create_time"`
-		ProductID          int64   `json:"product_id"`
-		ProductName        string  `json:"product_name"`
-		ProductImage       string  `json:"product_image"`
-		ProductDescription string  `json:"product_description"`
-	}
-)
-
-type (
-	ListOrdersRequest {
-		UID      int64 `form:"uid"`
-		Status   int32 `form:"status,optional"`
-		Cursor   int64 `form:"cursor,optional"`
-		PageSize int64 `form:"ps,default=20"`
-	}
-	ListOrdersResponse {
-		Orders    []*Order `json:"orders"`
-		IsEnd     bool     `json:"is_end"`
-		OrderTime int64    `json:"order_time"`
-	}
-)
-
 service api-api {
-	@handler ListOrdersHandler
-	get /api/order/list (ListOrdersRequest) returns (ListOrdersResponse)
-}
+	@handler UserLoginHandler
+	post /api/users/login (LoginRequest) returns (LoginResponse) 
+	// post /api/users/register (RegisterRequest) returns (RegisterResponse) 
+	@handler  UserInfoHandler
+	get /api/users/info (GetUserInfoRequest) returns (GetUserInfoResponse) 
 
+
+	// get /api/products returns (ListProductsResponse) 
+	// get /api/products/{id} returns (ProductDetailResponse) 
+
+	@handler CreateOrderHandler
+	post /api/order (CreateOrderRequest) returns (CreateOrderResponse)
+	@handler GetOrderHandler
+	get /api/order/{id} (GetOrderRequest) returns (GetOrderResponse) 
+	// get /api/order returns (ListOrdersResponse) 
+
+	// post /api/payments (PaymentRequest) returns (PaymentResponse) 
+}
