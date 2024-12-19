@@ -4,7 +4,6 @@ package product;
 option go_package="./product";
 
 service Product {
-    rpc GetProductByID(GetProductByIDRequest) returns (GetProductByIDResponse);
     rpc GetProducts(GetProductsRequest) returns(GetProductsResponse);
     rpc ListProducts(ListProductsRequest) returns(ListProductsResponse);
     rpc OperateProducts(OperateProductsRequest) returns (OperateProductsResponse);
@@ -16,20 +15,12 @@ service Product {
     rpc DecStockRevert(DecStockRequest) returns(DecStockResponse);
 }
 
-message GetProductByIDRequest {
-    int64 product_id = 1;
-}
-
-message GetProductByIDResponse {
-    ProductItem product = 1;
-}
-
 message GetProductsRequest {
     string product_ids = 1;
 }
 
 message GetProductsResponse {
-    map<int64, ProductItem> products = 1;
+    repeated products = 1;
 }
 
 message ProductItem {
